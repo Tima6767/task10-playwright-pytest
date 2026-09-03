@@ -1,0 +1,15 @@
+.venv/
+node_modules/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+
+allure-results/
+allure-report/
+test-results/
+playwright-report/
+
+.env
+.env.*
+!.env.example
