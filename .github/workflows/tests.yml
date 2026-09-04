@@ -16,6 +16,7 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -89,6 +90,23 @@ jobs:
           name: allure-report
           path: allure-report
           if-no-files-found: error
+
+      - name: Send Slack notification
+        if: always() && github.event_name != 'pull_request'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_STATUS: ${{ steps.pytest.outcome }}
+        run: |
+          if [ "$TEST_STATUS" = "success" ]; then
+            STATUS="PASSED ✅"
+          else
+            STATUS="FAILED ❌"
+          fi
+
+          curl -X POST \
+            -H 'Content-type: application/json' \
+            --data "{\"text\":\"Playwright tests: ${STATUS}\nAllure Report: https://tima6767.github.io/task10-playwright-pytest/\"}" \
+            "$SLACK_WEBHOOK_URL"
 
       - name: Fail workflow if tests failed
         if: steps.pytest.outcome != 'success'
