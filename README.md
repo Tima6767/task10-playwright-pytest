@@ -24,10 +24,11 @@ The automated tests cover user registration, login, logout, contact form, test c
 
 - Python 3.10+
 - Git
+- Node.js and npm
+- Java 8+
 - Playwright
 - Pytest
-- Allure
-- Java 8+ (required for Allure Commandline)
+- Allure Commandline
 
 ## Installation
 
@@ -124,26 +125,34 @@ Run tests and generate Allure results:
 .\.venv\Scripts\python.exe -m pytest tests -v --alluredir=allure-results
 ```
 
-Open the Allure report:
+Open the Allure report locally:
 
 ```powershell
 npx allure serve allure-results
 ```
 
-To generate a static report:
+Generate a static Allure report:
 
 ```powershell
 npx allure generate allure-results -o allure-report --clean
 ```
+
+The latest Allure report is also published to GitHub Pages:
+
+https://tima6767.github.io/task10-playwright-pytest/
 
 ## Project Structure
 
 ```text
 task10-playwright-pytest/
 │
+├── .github/
+│   └── workflows/
+│       └── tests.yml
+│
 ├── pages/
-│   ├── __init__.py
 │   ├── account_created_page.py
+│   ├── cases_page.py
 │   ├── contact_us_page.py
 │   ├── home_page.py
 │   ├── login_page.py
@@ -151,14 +160,16 @@ task10-playwright-pytest/
 │   └── signup_page.py
 │
 ├── tests/
-│   ├── __init__.py
+│   ├── allure_helpers.py
 │   ├── test_data.py
 │   └── test_main.py
 │
 ├── .gitignore
-├── requirements.txt
+├── conftest.py
+├── package.json
+├── package-lock.json
 ├── README.md
-└── ...
+└── requirements.txt
 ```
 
 ## Test Cases
@@ -199,7 +210,7 @@ This approach improves:
 
 Allure is used for test reporting.
 
-The final implementation will include:
+The report includes:
 
 - Test execution results
 - Test steps
@@ -211,14 +222,16 @@ The final implementation will include:
 
 GitHub Actions is used to run the automated tests in a CI environment.
 
-The pipeline will:
+The pipeline:
 
-- Install project dependencies
-- Install Playwright browsers
-- Run automated tests
-- Generate Allure results
-- Generate a static Allure report
-- Upload Allure results and the generated report as workflow artifacts
+- Installs project dependencies
+- Installs Playwright browsers
+- Runs automated tests
+- Generates Allure results
+- Generates a static Allure report
+- Uploads Allure results and the generated report as workflow artifacts
+- Publishes the Allure report to GitHub Pages
+- Sends the test execution status to Slack
 
 The workflow file is located at:
 
@@ -228,16 +241,31 @@ The workflow file is located at:
 
 The pipeline runs automatically on pushes to `main`/`master`, on pull requests, and can also be started manually from the GitHub Actions tab.
 
-Because the tested website can be unstable, the pipeline uploads the Allure report even when tests fail. The workflow still finishes with a failed status if pytest fails.
+Because the tested website can be unstable and may apply anti-bot verification in CI environments, the pipeline generates and publishes the Allure report even when tests fail. The workflow still finishes with a failed status if pytest fails.
 
-GitHub Pages publishing will be added as the next CI/CD step.
+The Allure report is available on GitHub Pages:
+
+https://tima6767.github.io/task10-playwright-pytest/
 
 ## Notifications
 
-Slack notifications will be configured to provide the test execution status and a link to the generated Allure report.
+Slack notifications are integrated into the GitHub Actions workflow.
 
-The notification will contain:
+After each push to `main`/`master`, the workflow sends a notification to Slack containing:
 
 - Test execution status
 - Pass/fail state
 - Link to the Allure report
+
+Example notification:
+
+```text
+Playwright tests: FAILED ❌
+Allure Report: https://tima6767.github.io/task10-playwright-pytest/
+```
+
+The Slack webhook URL is stored securely as a GitHub repository secret named:
+
+```text
+SLACK_WEBHOOK_URL
+```

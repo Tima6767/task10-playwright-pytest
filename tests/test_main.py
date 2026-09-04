@@ -9,7 +9,7 @@ from pages.contact_us_page import ContactUsPage
 from pathlib import Path
 from pages.products_page import ProductsPage
 from allure_helpers import attach_screenshot
-from pages.test_case_page import TestCasePage
+from pages.cases_page import CasesPage
 
 
 
@@ -240,20 +240,6 @@ def test_contact_us_form(page: Page):
     home_page = HomePage(page)
     contact_us_page = ContactUsPage(page)
 
-    page.route(
-        "**/*",
-        lambda route: (
-            route.abort()
-            if (
-                "googleads" in route.request.url
-                or "googlesyndication" in route.request.url
-                or "doubleclick.net" in route.request.url
-                or "fonts.googleapis.com" in route.request.url
-            )
-            else route.continue_()
-        )
-    )
-
     home_page.open()
     home_page.verify_home_page_is_visible()
 
@@ -276,7 +262,7 @@ def test_contact_us_form(page: Page):
 
     contact_us_page.submit()
 
-    expect(contact_us_page.success_message).to_be_visible()
+    expect(contact_us_page.success_message).to_be_visible(timeout=15000)
     attach_screenshot(page, "Success Message")
 
     contact_us_page.home_button.click()
@@ -285,7 +271,7 @@ def test_contact_us_form(page: Page):
 def test_verify_test_cases_page(page: Page):
 
     home_page = HomePage(page)
-    test_case_page = TestCasePage(page)
+    cases_page = CasesPage(page)
 
     home_page.open()
     home_page.verify_home_page_is_visible()
@@ -295,7 +281,7 @@ def test_verify_test_cases_page(page: Page):
     home_page.click_test_cases_button()
 
     attach_screenshot(page, 'Test Cases Page')
-    expect(test_case_page.test_cases_title).to_be_visible()
+    expect(cases_page.test_cases_title).to_be_visible()
 
 
 def test_verify_all_products_and_product_detail_page(page: Page):

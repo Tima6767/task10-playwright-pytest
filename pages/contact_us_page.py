@@ -1,5 +1,6 @@
 import allure
 
+
 class ContactUsPage:
     __test__ = False
 
@@ -11,8 +12,10 @@ class ContactUsPage:
         self.subject_input = page.locator('[data-qa="subject"]')
         self.message_input = page.locator('[data-qa="message"]')
         self.submit_button = page.locator('[data-qa="submit-button"]')
-        self.file_input = page.locator('[class="form-control"]').get_by_role("button", name="Choose File")
-        self.success_message = page.locator("#contact-page .status.alert.alert-success").filter(has_text="Success! Your details have been submitted successfully.")
+        self.file_input = page.locator('input[type="file"]')
+        self.success_message = page.locator("#contact-page .status.alert.alert-success").filter(
+            has_text="Success! Your details have been submitted successfully."
+        )
         self.home_button = page.get_by_role("link", name=" Home")
 
     @allure.step("Fill contact us form with name, email, subject, message")
@@ -21,7 +24,7 @@ class ContactUsPage:
         self.email_input.fill(email)
         self.subject_input.fill(subject)
         self.message_input.fill(message)
-        
+
     @allure.step("Upload file with file path")
     def upload_file(self, file_path):
         self.file_input.set_input_files(file_path)
@@ -29,4 +32,5 @@ class ContactUsPage:
     @allure.step("Submit contact us form")
     def submit(self):
         self.submit_button.click()
+        self.page.wait_for_load_state("domcontentloaded")
 

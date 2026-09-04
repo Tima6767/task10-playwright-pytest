@@ -1,6 +1,4 @@
-class TestCasePage:
-    __test__ = False
-
+class CasesPage:
     def __init__(self, page):
         self.page = page
         self.test_cases_title = page.locator('[class="title text-center"]').filter(has_text='Test Cases')
